@@ -1,0 +1,39 @@
+---
+title: Theme 6 — PulseListen AI Architecture
+config:
+  theme: default
+---
+flowchart TB
+    subgraph Admin["ADMIN LAYER"]
+      PROJ["Monitoring Projects<br/>keywords + sources + cadence"]
+      REG["Source Engine Registry<br/>(factory pattern)"]
+      SUGG["Agentic Source Suggester<br/>(URL → config)"]
+    end
+    subgraph Crawlers["DATA ACQUISITION"]
+      X["X / Twitter Crawler<br/>(stub → twitterapi.io)"]
+      REDDIT["Reddit Crawler<br/>(stub → PRAW)"]
+      FORUM["Forum/Quora Crawler<br/>(pluggable)"]
+    end
+    subgraph Pipeline["PROCESSING PIPELINE"]
+      PII["PII/PHI Redactor<br/>(regex rules)"]
+      AI["AI Analyzer<br/>(signal type, sentiment,<br/>entities, adverse event)"]
+      STORE["SQLite + Prisma<br/>(mentions + audit)"]
+    end
+    subgraph UI["DASHBOARD"]
+      DASH["Overview<br/>+ Mentions table<br/>+ PII side-by-side"]
+      SIGNALS["Adverse Event Feed<br/>(severity ranked)"]
+      TIMELINE["Timeline Chart<br/>(Tremor LineChart)"]
+    end
+    PROJ --> X & REDDIT & FORUM
+    REG -.-> X & REDDIT & FORUM
+    SUGG -.-> REG
+    X & REDDIT & FORUM --> PII --> AI --> STORE
+    STORE --> DASH & SIGNALS & TIMELINE
+    classDef admin fill:#e0f2fe,stroke:#0369a1,color:#0c4a6e
+    classDef crawl fill:#0ea5e9,stroke:#0369a1,color:#fff
+    classDef pipe fill:#0284c7,stroke:#075985,color:#fff
+    classDef ui fill:#f0f9ff,stroke:#0369a1,color:#0c4a6e
+    class PROJ,REG,SUGG admin
+    class X,REDDIT,FORUM crawl
+    class PII,AI,STORE pipe
+    class DASH,SIGNALS,TIMELINE ui

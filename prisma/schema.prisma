@@ -1,0 +1,88 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  keywords    String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  sources     Source[]
+  mentions    Mention[]
+}
+
+model Source {
+  id            String    @id @default(cuid())
+  projectId     String
+  sourceType    String
+  cadence       String
+  config        String
+  lastCrawledAt DateTime?
+  project       Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+}
+
+model Mention {
+  id                  String   @id @default(cuid())
+  projectId           String
+  sourceType          String
+  sourceUrl           String?
+  authorHandle        String?
+  rawText             String
+  redactedText        String?
+  piiFlags            String?
+  postedAt            DateTime?
+  acquiredAt          DateTime @default(now())
+  signalType          String?
+  sentiment           String?
+  sentimentConfidence Float?
+  entities            String?
+  isAdverseEvent      Boolean  @default(false)
+  reasoning           String?
+  // Multilingual fields
+  detectedLanguage    String?
+  // Zero-shot novel signal fields
+  noveltyScore        Float?
+  isNovelSignal       Boolean  @default(false)
+  clusterLabel        String?
+  // Diffusion fields
+  diffusionLabel      String?
+  spreadPattern       String?
+  // Geographic fields
+  geoState            String?
+  geoCity             String?
+  geoLat              Float?
+  geoLng              Float?
+
+  project             Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, postedAt])
+  @@index([projectId, signalType])
+  @@index([projectId, isNovelSignal])
+  @@index([geoState])
+}
+
+model ICSRReport {
+  id             String   @id @default(cuid())
+  mentionId      String
+  projectId      String
+  reportJson     String
+  severity       String
+  status         String   @default("DRAFT")
+  generatedAt    DateTime @default(now())
+}
+
+model AdminAction {
+  id        String   @id @default(cuid())
+  projectId String?
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
