@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { prisma } from '@/lib/db'
 import { format } from 'date-fns'
-import { BarChart, LineChart } from '@tremor/react'
+import { SentimentChart, SignalChart, TimelineChart } from './charts'
 import { ArrowLeft, Activity, AlertTriangle, Brain, Shield, Globe } from 'lucide-react'
 import { getNovelClusters } from '@/lib/zero-shot'
 
@@ -236,20 +236,12 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="glass rounded-xl p-5">
               <h3 className="text-sm font-semibold text-slate-300 mb-4">Sentiment Distribution</h3>
-              {sentimentData.length > 0 ? (
-                <BarChart data={sentimentData} index="name" categories={['value']} colors={['cyan']} showLegend={false} className="h-48" />
-              ) : (
-                <p className="text-slate-500 text-center py-8 text-sm">No data</p>
-              )}
+              <SentimentChart data={sentimentData} />
             </div>
 
             <div className="glass rounded-xl p-5">
               <h3 className="text-sm font-semibold text-slate-300 mb-4">Signal Types</h3>
-              {signalData.length > 0 ? (
-                <BarChart data={signalData} index="name" categories={['count']} colors={['emerald']} showLegend={false} className="h-48" />
-              ) : (
-                <p className="text-slate-500 text-center py-8 text-sm">No data</p>
-              )}
+              <SignalChart data={signalData} />
             </div>
           </div>
 
@@ -480,19 +472,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           <div className="glass rounded-xl p-5">
             <h3 className="text-sm font-semibold text-slate-300 mb-4">Mention Timeline (Last 30 Days)</h3>
 
-            {chartData.length === 0 ? (
-              <p className="text-slate-500 text-center py-8 text-sm">No timeline data</p>
-            ) : (
-              <LineChart
-                data={chartData}
-                index="date"
-                categories={['mentions']}
-                colors={['cyan']}
-                yAxisWidth={40}
-                showLegend={false}
-                className="h-64"
-              />
-            )}
+            <TimelineChart data={chartData} />
           </div>
         </TabsContent>
       </Tabs>
